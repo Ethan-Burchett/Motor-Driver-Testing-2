@@ -45,7 +45,7 @@ class DRV8825():
                      '1/4step': (0, 1, 0),
                      '1/8step': (1, 1, 0),
                      '1/16step': (0, 0, 1),
-                     '1/32step': (1, 0, 1)}
+                     '1/32step': (1, 0, 1)} 
 
         print("Control mode:",mode)
         if (mode == ControlMode[1]):
