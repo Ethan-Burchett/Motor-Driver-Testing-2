@@ -4,14 +4,16 @@ from DRV8825 import DRV8825
 
 Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
 Motor1.SetMicroStep('hardward','fullstep')
+Motor2 = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
+Motor2.SetMicroStep('hardward','fullstep')
 Stop = 1
 while(Stop == 1):
     key = input()
     if(key == 'f'): #forward
-        Motor1.TurnStep(Dir='forward', steps=700, stepdelay = 0)
-
+        Motor1.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
+        #Motor2.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
     if(key == 'b'): #backward
-        Motor1.TurnStep(Dir='backward', steps=700, stepdelay = 0)
+        Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
 
     if(key == 's'):
         Stop = 0
