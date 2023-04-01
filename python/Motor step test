@@ -3,44 +3,61 @@ import time
 from DRV8825 import DRV8825
 
 #end stop controller
-#working with end stop limit switch with signal(green) on pin 19 using GPIO.BOARD
-#red: voltage(4), black:ground (6), green:signal(19)
+#working with end stop limit switch with signal(green) on pin 23 using GPIO.setmode(GPIO.BCM)
+#red: voltage(4), black:ground (6), green:signal(23)(gpio 11)
 button = 0
-button_pin = 23
+button_pin = 11 #boad 23
 
-import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
+GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setmode(GPIO.BCM) # Use BCM pin numbering
+
+Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))  
+Motor1.SetMicroStep('hardward','fullstep')
+
+toggle = True
+
 def button_callback(channel):
     global button
+    global toggle
     print("Button was pushed!:")
     print(button)
     button +=1
-    # Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
+    if toggle:
+        Motor1.TurnStep(Dir='backward', steps=500, stepdelay = 0.001)
+        toggle = False
+        return
+
+    if not toggle:
+        Motor1.TurnStep(Dir='forward', steps=500, stepdelay = 0.001)
+        toggle = True
+        return
+       
+        
+
+ 
 
 
-GPIO.setwarnings(False) # Ignore warning for now
-GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
-GPIO.add_event_detect(23,GPIO.FALLING,callback=button_callback,bouncetime=50) # Setup event on pin 10 rising edge
+
+GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+GPIO.add_event_detect(button_pin,GPIO.FALLING,callback=button_callback,bouncetime=100) # Setup event on pin 10 rising edge
 message = input("Press enter to quit\n\n") # Run until someone presses enter
 GPIO.cleanup() # Clean up
 
-Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))  #changed step_pin from 19 to 18 since button uses 19
-Motor1.SetMicroStep('hardward','fullstep')
 # Motor2 = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
 # Motor2.SetMicroStep('hardward','fullstep')
 
 
-Stop = 1
-while(Stop == 1):
-    key = input()
-    if(key == 'f'): #forward
-        Motor1.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
-        #Motor2.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
-    if(key == 'b'): #backward
-        Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
+# Stop = 1
+# while(Stop == 1):
+#     key = input()
+#     if(key == 'f'): #forward
+#         Motor1.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
+#         #Motor2.TurnStep(Dir='forward', steps=800, stepdelay = 0.001)
+#     if(key == 'b'): #backward
+#         Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
 
-    if(key == 's'):
-        Stop = 0
+#     if(key == 's'):
+#         Stop = 0
 
 time.sleep(0.5)
 #Motor1.TurnStep(Dir='backward', steps=400, stepdelay = 0.005)
