@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from DRV8825 import DRV8825
+import math 
 
 #end stop controller
 #working with end stop limit switch with signal(green) on pin 23 using GPIO.setmode(GPIO.BCM)
@@ -12,9 +13,18 @@ GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BCM) # Use BCM pin numbering - most common and motor driver lib uses it
 
 Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))  #in use: 12,13,15,16,17,19,20
-Motor1.SetMicroStep('hardward','fullstep')
+#12 and 13 are used for ** 
+# Motor1.SetMicroStep('hardward','fullstep')
 
 toggle = True
+
+def rotate(motor,rotations,speed): #default speed = 0.001
+    msteps = math.ceil(rotations * 800)
+    if(speed > 5):
+        speed = 5
+    mspeed = 0.001 / speed
+    motor.TurnStep(Dir='backward', steps=msteps, stepdelay = mspeed)
+
 
 def button_callback(channel):
     global button_press_count
@@ -22,14 +32,17 @@ def button_callback(channel):
     print("Button was pushed!:")
     print(button_press_count)
     button_press_count +=1
+
     if toggle:
-        Motor1.TurnStep(Dir='backward', steps=500, stepdelay = 0.001)
+        # Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
+        rotate(Motor1,0.9,0.9999)
         toggle = False
         return
 
     if not toggle:
-        Motor1.TurnStep(Dir='forward', steps=500, stepdelay = 0.001)
+        # Motor1.TurnStep(Dir='forward', steps=500, stepdelay = 0.001)
         toggle = True
+        Motor1.sleep = True
         return
        
         
