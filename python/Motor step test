@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 from DRV8825 import DRV8825
 import math 
+from rotate_functions import rotate
 
 #end stop controller
 #working with end stop limit switch with signal(green) on pin 23 using GPIO.setmode(GPIO.BCM)
@@ -18,12 +19,16 @@ Motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
 
 toggle = True
 
-def rotate(motor,rotations,speed): #default speed = 0.001
-    msteps = math.ceil(rotations * 800)
-    if(speed > 5):
-        speed = 5
-    mspeed = 0.001 / speed
-    motor.TurnStep(Dir='backward', steps=msteps, stepdelay = mspeed)
+# def rotate(motor,rotations,speed): #default speed = 0.001
+#     msteps = math.ceil(abs(rotations) * 800)
+#     direction = 'backward'
+#     if(rotations<0): #counterclockwise negative(towards motor), clockwise positive(away from motor)
+#         direction = 'forward'
+
+#     if(speed > 5):
+#         speed = 5
+#     mspeed = 0.001 / speed
+#     motor.TurnStep(Dir=direction, steps=msteps, stepdelay = mspeed)
 
 
 def button_callback(channel):
@@ -35,7 +40,7 @@ def button_callback(channel):
 
     if toggle:
         # Motor1.TurnStep(Dir='backward', steps=800, stepdelay = 0.001)
-        rotate(Motor1,0.9,0.9999)
+        rotate(Motor1,2,1)
         toggle = False
         return
 
